@@ -1,5 +1,17 @@
 """
 wellmind/settings.py : Configuration centrale du projet Django WellMind-Lab.
+
+=== ÉTAT D'AVANCEMENT ===
+[✅ FAIT] AUTH_USER_MODEL = 'comptes.CustomUser' — modèle utilisateur personnalisé actif.
+[✅ FAIT] INSTALLED_APPS inclut 'comptes' et 'evaluations'.
+[✅ FAIT] TEMPLATES configuré avec le dossier templates/ racine du projet.
+[✅ FAIT] STATICFILES_DIRS et STATIC_URL configurés pour les fichiers CSS/JS.
+[✅ FAIT] LOGIN_URL et LOGIN_REDIRECT_URL pointent vers les vues comptes/.
+[✅ FAIT] BASE de données SQLite : db.sqlite3 (développement local uniquement).
+
+[❌ RESTE À FAIRE] SECRET_KEY à externaliser dans une variable d'environnement pour la production.
+[❌ RESTE À FAIRE] DEBUG à passer à False et ALLOWED_HOSTS à restreindre en production.
+[❌ RESTE À FAIRE] DATABASES à remplacer par PostgreSQL si déploiement serveur.
 """
 from pathlib import Path
 

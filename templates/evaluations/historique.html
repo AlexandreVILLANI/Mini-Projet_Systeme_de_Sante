@@ -36,23 +36,23 @@
                             <tr>
                                 <td class="ps-4 fw-semibold text-dark">
                                     <i class="bi bi-calendar3 me-2 text-primary"></i>
-                                    {{ eval.date }}
+                                    {{ eval.dateEvaluation|date:"d/m/Y" }}
                                 </td>
                                 <td>
                                     <span class="badge bg-light text-dark border">
-                                        {{ eval.score_brut }} / 25
+                                        {{ eval.scoreBrut }} / 25
                                     </span>
                                 </td>
                                 <td>
                                     <div class="d-flex align-items-center gap-2">
-                                        <span class="fw-bold {% if eval.score_100 >= 50 %}text-success{% else %}text-warning{% endif %}">
-                                            {{ eval.score_100 }} / 100
+                                        <span class="fw-bold {% if eval.scoreSur100 >= 50 %}text-success{% else %}text-warning{% endif %}">
+                                            {{ eval.scoreSur100 }} / 100
                                         </span>
                                     </div>
                                 </td>
                                 <td>
-                                    <span class="badge rounded-pill {% if eval.score_100 >= 50 %}bg-success-subtle text-success{% else %}bg-warning-subtle text-warning{% endif %} px-3 py-1">
-                                        {{ eval.niveau }}
+                                    <span class="badge rounded-pill {% if eval.scoreSur100 >= 50 %}bg-success-subtle text-success{% else %}bg-warning-subtle text-warning{% endif %} px-3 py-1">
+                                        {% if eval.scoreSur100 >= 50 %}Bien-être satisfaisant{% else %}Bien-être insuffisant{% endif %}
                                     </span>
                                 </td>
                                 <td class="pe-4 text-end">

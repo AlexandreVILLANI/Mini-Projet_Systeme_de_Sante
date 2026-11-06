@@ -14,6 +14,23 @@ Conforme au diagramme de classes UML :
     * Analyser le score WHO-5 et proposer un plan pédagogique de bien-être sur 7 jours.
     * Réponse de secours (fallback) si le LLM est indisponible.
     * Interdiction formelle des recommandations et diagnostics médicaux.
+
+=== ÉTAT D'AVANCEMENT ===
+[✅ FAIT] Classe ServiceIA_Ollama conforme au diagramme UML.
+[✅ FAIT] Connexion réelle à l'API REST d'Ollama (http://localhost:11434/api/generate).
+[✅ FAIT] Modèle qwen3:4b configuré et testé (confirmé présent via 'ollama list').
+[✅ FAIT] System prompt avec garde-fous éthiques stricts (aucun diagnostic médical autorisé).
+[✅ FAIT] Méthode analyserScore() : interprétation pédagogique du score selon 3 niveaux.
+[✅ FAIT] Méthode genererPlan7Jours() : appel HTTP avec timeout de 25s.
+[✅ FAIT] Méthode extraire_jours() : découpage du texte LLM en 7 étapes structurées.
+[✅ FAIT] Méthode _plan_de_secours() : plan prédéfini si Ollama est hors ligne (Fallback).
+[✅ FAIT] Tests unitaires (test_ia.py) : system_prompt, niveaux d'analyse, fallback, extraction.
+
+[⚠️  ATTENTION] Le modèle qwen3:4b a tendance à penser longtemps (token "thinking") avant de
+          répondre. La durée de génération peut atteindre 30-60s selon la machine.
+          Le timeout est actuellement fixé à 25s : augmenter si les réponses sont vides.
+[❌ RESTE À FAIRE] Paramètre 'think: false' ou /no_think dans le prompt pour désactiver le mode
+          "thinking" de Qwen3 et obtenir des réponses plus rapides (à tester selon la version Ollama).
 """
 import re
 import requests

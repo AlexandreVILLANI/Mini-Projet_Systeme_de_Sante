@@ -5,6 +5,14 @@ Conforme au cahier des charges :
 - Validation des saisies utilisateur.
 - Hachage automatique des mots de passe avec l'algorithme standard PBKDF2/SHA256.
 - Attribution du rôle (PATIENT par défaut ou ADMINISTRATEUR).
+
+=== ÉTAT D'AVANCEMENT ===
+[✅ FAIT] InscriptionForm : hérite de UserCreationForm, hachage automatique du mot de passe,
+          champs Prénom, Nom, Email, Rôle, contrôle de l'unicité de l'email.
+[✅ FAIT] ConnexionForm : hérite de AuthenticationForm, vérifie les identifiants.
+
+[❌ RESTE À FAIRE] Pas de formulaire de modification de profil utilisateur (Nom, Email).
+[❌ RESTE À FAIRE] Pas de formulaire de changement de mot de passe.
 """
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm

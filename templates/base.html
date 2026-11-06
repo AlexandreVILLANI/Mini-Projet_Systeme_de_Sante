@@ -31,31 +31,41 @@
             
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto align-items-lg-center gap-2">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'evaluations:questionnaire' %}">
-                            <i class="bi bi-ui-checks"></i> Questionnaire WHO-5
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'evaluations:resultats' 1 %}">
-                            <i class="bi bi-graph-up-arrow"></i> Dernier Résultat
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'evaluations:historique' %}">
-                            <i class="bi bi-clock-history"></i> Mon Historique
-                        </a>
-                    </li>
-                    <li class="nav-item ms-lg-2">
-                        <a class="btn btn-outline-light btn-sm" href="{% url 'comptes:connexion' %}">
-                            <i class="bi bi-box-arrow-in-right"></i> Connexion
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="btn btn-warning btn-sm text-dark fw-semibold" href="{% url 'comptes:inscription' %}">
-                            <i class="bi bi-person-plus-fill"></i> Inscription
-                        </a>
-                    </li>
+                    {% if user.is_authenticated %}
+                        <!-- Liens visibles uniquement pour les utilisateurs connectés -->
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'evaluations:questionnaire' %}">
+                                <i class="bi bi-ui-checks"></i> Questionnaire WHO-5
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'evaluations:historique' %}">
+                                <i class="bi bi-clock-history"></i> Mon Historique
+                            </a>
+                        </li>
+                        <li class="nav-item ms-lg-2">
+                            <span class="nav-link text-white-50 small">
+                                <i class="bi bi-person-circle"></i> {{ user.username }}
+                            </span>
+                        </li>
+                        <li class="nav-item">
+                            <a class="btn btn-outline-light btn-sm" href="{% url 'comptes:deconnexion' %}">
+                                <i class="bi bi-box-arrow-right"></i> Déconnexion
+                            </a>
+                        </li>
+                    {% else %}
+                        <!-- Liens visibles uniquement pour les visiteurs non connectés -->
+                        <li class="nav-item ms-lg-2">
+                            <a class="btn btn-outline-light btn-sm" href="{% url 'comptes:connexion' %}">
+                                <i class="bi bi-box-arrow-in-right"></i> Connexion
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="btn btn-warning btn-sm text-dark fw-semibold" href="{% url 'comptes:inscription' %}">
+                                <i class="bi bi-person-plus-fill"></i> Inscription
+                            </a>
+                        </li>
+                    {% endif %}
                 </ul>
             </div>
         </div>

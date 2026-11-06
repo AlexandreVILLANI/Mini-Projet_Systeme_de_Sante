@@ -6,6 +6,18 @@ Sécurité mise en œuvre :
 - Gestion des sessions utilisateur authentifiées.
 - Validation stricte des formulaires côté serveur.
 - Protection contre les attaques CSRF.
+
+=== ÉTAT D'AVANCEMENT ===
+[✅ FAIT] vue_inscription : formulaire InscriptionForm validé, hachage du mot de passe, enregistrement
+          en base de données, redirection vers la connexion avec message de succès.
+[✅ FAIT] vue_connexion : AuthenticationForm, login() Django (session), redirection vers ?next=.
+[✅ FAIT] vue_deconnexion : logout() Django, destruction de la session.
+[✅ FAIT] Si déjà connecté, l'utilisateur est redirigé directement vers le questionnaire.
+
+[❌ RESTE À FAIRE] Pas de vue d'administration : liste des comptes, modification, suppression
+          (côté Administrateur, méthodes listerComptes, ajouterCompte, modifierCompte,
+          supprimerCompte du diagramme UML).
+[❌ RESTE À FAIRE] Pas de gestion du rôle Administrateur dans la navigation (accès différencié).
 """
 from django.shortcuts import render, redirect
 from django.contrib import messages

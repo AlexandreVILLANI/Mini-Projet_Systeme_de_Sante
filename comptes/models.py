@@ -5,6 +5,17 @@ Conforme au diagramme UML :
 - Classe Compte (ici CustomUser héritant d'AbstractUser)
 - Attributs : nom, email, motDePasse, dateCreation, role
 - Rôles : PATIENT, ADMINISTRATEUR
+
+=== ÉTAT D'AVANCEMENT ===
+[✅ FAIT] Classe CustomUser définie avec les champs nom, email, role (PATIENT / ADMINISTRATEUR)
+[✅ FAIT] Héritage de AbstractUser (gestion des mots de passe, sessions, permissions)
+[✅ FAIT] Méthodes est_patient() et est_admin()
+[✅ FAIT] Migration de la base de données générée et appliquée (comptes/migrations/0001_initial.py)
+[✅ FAIT] Déclaré comme AUTH_USER_MODEL dans settings.py
+
+[❌ RESTE À FAIRE] Pas de vue de profil utilisateur (édition du nom, email, mot de passe)
+[❌ RESTE À FAIRE] Pas de réinitialisation de mot de passe
+[❌ RESTE À FAIRE] Pas de gestion des comptes Administrateur côté interface (CRUD)
 """
 from django.contrib.auth.models import AbstractUser
 from django.db import models

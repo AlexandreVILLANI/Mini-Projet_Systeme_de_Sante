@@ -11,28 +11,26 @@
             <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden">
                 <div class="card-body p-4 p-md-5 text-center">
                     <span class="badge bg-success-subtle text-success px-3 py-2 rounded-pill fw-bold mb-3">
-                        <i class="bi bi-calendar-check me-1"></i> Évaluation du {{ date_evaluation }}
+                        <i class="bi bi-calendar-check me-1"></i> Évaluation du {{ evaluation.dateEvaluation|date:"d/m/Y" }}
                     </span>
-                    
+
                     <h2 class="fw-bold mb-1">Votre Indice de Bien-Être WHO-5</h2>
-                    <p class="text-muted small mb-4">Calculé selon la formule officielle OMS : 4 × somme des 5 réponses</p>
+                    <p class="text-muted small mb-4">Calculé selon la formule officielle OMS : 4 × somme des 5 réponses
+                    </p>
 
                     <!-- Affichage du Score Normalisé -->
                     <div class="score-display my-4">
                         <div class="score-circle mx-auto">
-                            <span class="score-number">{{ score_100 }}</span>
+                            <span class="score-number">{{ evaluation.scoreSur100 }}</span>
                             <span class="score-max">/ 100</span>
                         </div>
                     </div>
 
                     <!-- Barre de progression -->
                     <div class="progress mb-2 mx-auto" style="height: 12px; max-width: 400px;">
-                        <div class="progress-bar {% if score_100 >= 50 %}bg-success{% else %}bg-warning{% endif %}" 
-                             role="progressbar" 
-                             style="width: {{ score_100 }}%;" 
-                             aria-valuenow="{{ score_100 }}" 
-                             aria-valuemin="0" 
-                             aria-valuemax="100">
+                        <div class="progress-bar {% if evaluation.scoreSur100 >= 50 %}bg-success{% else %}bg-warning{% endif %}"
+                            role="progressbar" style="width: {{ evaluation.scoreSur100 }}%;" aria-valuenow="{{ evaluation.scoreSur100 }}"
+                            aria-valuemin="0" aria-valuemax="100">
                         </div>
                     </div>
                     <div class="d-flex justify-content-between mx-auto text-muted small mb-4" style="max-width: 400px;">
@@ -42,14 +40,16 @@
                     </div>
 
                     <div class="badge bg-light text-dark border px-3 py-2 rounded-pill">
-                        Score brut officiel : <strong>{{ score_brut }} / 25</strong> (Formule : {{ score_brut }} × 4 = {{ score_100 }})
+                        Score brut officiel : <strong>{{ evaluation.scoreBrut }} / 25</strong> (Formule : {{ evaluation.scoreBrut }} × 4 =
+                        {{ evaluation.scoreSur100 }})
                     </div>
                 </div>
             </div>
 
             <!-- Analyse du score par l'IA -->
             {% if analyse_score %}
-            <div class="alert alert-primary border-primary-subtle rounded-4 p-3 mb-4 shadow-sm d-flex align-items-center gap-3">
+            <div
+                class="alert alert-primary border-primary-subtle rounded-4 p-3 mb-4 shadow-sm d-flex align-items-center gap-3">
                 <i class="bi bi-chat-quote-fill text-primary fs-3 flex-shrink-0"></i>
                 <div class="small">
                     <strong>Analyse pédagogique du score :</strong> {{ analyse_score }}
@@ -64,7 +64,7 @@
                     <div>
                         <h5 class="alert-heading fw-bold mb-1">Avertissement de non-responsabilité médicale</h5>
                         <p class="mb-0 small text-danger-emphasis">
-                            {{ avertissement_medical }}
+                            {{ plan.avertissementMedical }}
                         </p>
                     </div>
                 </div>
@@ -72,7 +72,8 @@
 
             <!-- Réponse directe du Modèle LLM (Qwen3-4B) -->
             <div class="card border-0 shadow-sm rounded-4 mb-4">
-                <div class="card-header bg-white border-0 pt-4 px-4 pb-0 d-flex justify-content-between align-items-center">
+                <div
+                    class="card-header bg-white border-0 pt-4 px-4 pb-0 d-flex justify-content-between align-items-center">
                     <div>
                         <span class="badge bg-primary-subtle text-primary px-3 py-1 rounded-pill fw-bold">
                             <i class="bi bi-cpu me-1"></i> Modèle IA : {{ modele_ia|default:"Qwen3-4B (Ollama)" }}
@@ -82,12 +83,14 @@
                 </div>
                 <div class="card-body p-4">
                     <p class="text-muted small mb-3">
-                        Ce programme a été rédigé spécifiquement par le modèle de langage Qwen3-4B à partir de votre score d'évaluation :
+                        Ce programme a été rédigé spécifiquement par le modèle de langage Qwen3-4B à partir de votre
+                        score d'évaluation :
                     </p>
 
                     <!-- Affichage de la réponse authentique générée par le modèle -->
-                    <div class="bg-light rounded-4 p-4 text-dark fs-6 border" style="line-height: 1.8; white-space: pre-line;">
-                        {{ texte_plan }}
+                    <div class="bg-light rounded-4 p-4 text-dark fs-6 border"
+                        style="line-height: 1.8; white-space: pre-line;">
+                        {{ plan.contenuTexte }}
                     </div>
                 </div>
             </div>

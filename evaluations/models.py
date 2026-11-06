@@ -4,6 +4,20 @@ evaluations/models.py : Modélisation des questionnaires WHO-5 et des plans péd
 Conforme au diagramme de classes UML :
 - Evaluation : enregistre les réponses (0 à 5), calcule le score brut (/25) et le score sur 100 (* 4).
 - PlanPedagogique : stocke le programme 7 jours produit par l'IA et l'avertissement médical.
+
+=== ÉTAT D'AVANCEMENT ===
+[✅ FAIT] Classe Evaluation avec ForeignKey vers CustomUser (un patient a 0..* évaluations).
+[✅ FAIT] Champs reponseQ1 à reponseQ5 (entiers de 0 à 5, validés avec MinValueValidator/MaxValueValidator).
+[✅ FAIT] Champ dateEvaluation (DateTimeField automatique).
+[✅ FAIT] Champs scoreBrut et scoreSur100 calculés et mis à jour automatiquement dans save().
+[✅ FAIT] Méthodes calculerScoreTotal() et calculerScoreSur100() conformes au diagramme UML.
+[✅ FAIT] Classe PlanPedagogique avec OneToOneField vers Evaluation.
+[✅ FAIT] Champs contenuTexte (réponse du LLM) et avertissementMedical (mention légale).
+[✅ FAIT] Méthode afficherPlan() conforme au diagramme UML.
+[✅ FAIT] Migration générée et appliquée (evaluations/migrations/0001_initial.py).
+[✅ FAIT] Tests unitaires écrits et validés (calculerScoreTotal, calculerScoreSur100, save()).
+
+[❌ RESTE À FAIRE] Pas de vue de consultation d'une évaluation par l'Administrateur.
 """
 from django.db import models
 from django.conf import settings
