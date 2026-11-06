@@ -1,4 +1,5 @@
-"""
-wellmind/wsgi.py : Passerelle standard WSGI pour les serveurs web compatibles (Gunicorn, uWSGI).
-"""
+import os
+from django.core.wsgi import get_wsgi_application
 
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'wellmind.settings')
+application = get_wsgi_application()

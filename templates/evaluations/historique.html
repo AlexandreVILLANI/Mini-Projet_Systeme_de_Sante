@@ -1,10 +1,91 @@
-<!--
-templates/evaluations/historique.html : Vue de consultation des évaluations antérieures.
+{% extends "base.html" %}
 
-Rôle dans le projet :
-- Hérite de 'base.html'.
-- Tableau listant les évaluations passées du patient connecté (Date, Score brut, Score /100).
-- Lien d'accès au détail de chaque résultat pour revoir le plan pédagogique associé.
-- Message incitatif si aucune évaluation n'a encore été réalisée.
--->
+{% block title %}Historique des Évaluations - WellMind-Lab{% endblock %}
 
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+
+            <!-- En-tête de page -->
+            <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+                <div>
+                    <h2 class="fw-bold mb-1">Historique de vos Évaluations</h2>
+                    <p class="text-muted small mb-0">Suivez l'évolution de votre indice de bien-être WHO-5 dans le temps</p>
+                </div>
+                <a href="{% url 'evaluations:questionnaire' %}" class="btn btn-primary rounded-pill px-4 shadow-sm">
+                    <i class="bi bi-plus-circle me-1"></i> Nouvelle Évaluation
+                </a>
+            </div>
+
+            <!-- Tableau d'historique -->
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light text-uppercase small text-muted">
+                            <tr>
+                                <th class="ps-4 py-3">Date</th>
+                                <th class="py-3">Score Brut</th>
+                                <th class="py-3">Score Normalisé</th>
+                                <th class="py-3">Niveau Indicatif</th>
+                                <th class="pe-4 py-3 text-end">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for eval in evaluations %}
+                            <tr>
+                                <td class="ps-4 fw-semibold text-dark">
+                                    <i class="bi bi-calendar3 me-2 text-primary"></i>
+                                    {{ eval.date }}
+                                </td>
+                                <td>
+                                    <span class="badge bg-light text-dark border">
+                                        {{ eval.score_brut }} / 25
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="fw-bold {% if eval.score_100 >= 50 %}text-success{% else %}text-warning{% endif %}">
+                                            {{ eval.score_100 }} / 100
+                                        </span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge rounded-pill {% if eval.score_100 >= 50 %}bg-success-subtle text-success{% else %}bg-warning-subtle text-warning{% endif %} px-3 py-1">
+                                        {{ eval.niveau }}
+                                    </span>
+                                </td>
+                                <td class="pe-4 text-end">
+                                    <a href="{% url 'evaluations:resultats' eval.id %}" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                                        <i class="bi bi-eye me-1"></i> Voir le plan
+                                    </a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center py-5 text-muted">
+                                    <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                                    Aucune évaluation enregistrée pour le moment.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Rappel pédagogique -->
+            <div class="card border-0 bg-white rounded-4 p-4 shadow-sm">
+                <div class="d-flex align-items-center gap-3">
+                    <i class="bi bi-info-circle-fill fs-2 text-primary flex-shrink-0"></i>
+                    <div class="small text-muted">
+                        <strong>Protection des données & Confidentialité :</strong> Conformément aux règles de sécurité du projet, 
+                        seules vos propres évaluations sont accessibles depuis votre session. Ces résultats sont générés à des fins d'apprentissage.
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

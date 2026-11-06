@@ -1,10 +1,100 @@
-<!--
-templates/comptes/inscription.html : Vue pour l'inscription d'un nouvel utilisateur.
+{% extends "base.html" %}
 
-Rôle dans le projet :
-- Hérite de 'base.html'.
-- Affiche le formulaire d'inscription (Nom, Prénom, Email, Mot de passe et confirmation).
-- Bouton de soumission en méthode POST avec jeton CSRF ({% csrf_token %}).
-- Lien vers la page de connexion pour les utilisateurs possédant déjà un compte.
--->
+{% block title %}Inscription - WellMind-Lab{% endblock %}
 
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-7 col-lg-6">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                <div class="card-header bg-primary text-white text-center py-4">
+                    <i class="bi bi-person-circle fs-1 mb-2 d-block"></i>
+                    <h3 class="fw-bold mb-1">Créer un compte</h3>
+                    <p class="text-white-50 small mb-0">Rejoignez la plateforme WellMind-Lab</p>
+                </div>
+                
+                <div class="card-body p-4 p-md-5">
+                    <form method="post" action="{% url 'comptes:inscription' %}">
+                        {% csrf_token %}
+                        
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <label for="prenom" class="form-label fw-semibold">Prénom</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-person"></i></span>
+                                    <input type="text" class="form-control border-start-0" id="prenom" name="prenom" placeholder="Jean" required>
+                                </div>
+                            </div>
+                            
+                            <div class="col-sm-6">
+                                <label for="nom" class="form-label fw-semibold">Nom</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-person"></i></span>
+                                    <input type="text" class="form-control border-start-0" id="nom" name="nom" placeholder="Dupont" required>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12">
+                                <label for="email" class="form-label fw-semibold">Adresse Email</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-envelope"></i></span>
+                                    <input type="email" class="form-control border-start-0" id="email" name="email" placeholder="jean.dupont@exemple.fr" required>
+                                </div>
+                                <div class="form-text">Votre email restera strictement confidentiel.</div>
+                            </div>
+
+                            <div class="col-12">
+                                <label for="role" class="form-label fw-semibold">Rôle du compte</label>
+                                <select class="form-select" id="role" name="role">
+                                    <option value="PATIENT" selected>Patient (évaluation du bien-être)</option>
+                                    <option value="ADMINISTRATEUR">Administrateur (gestion)</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-sm-6">
+                                <label for="password" class="form-label fw-semibold">Mot de passe</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-lock"></i></span>
+                                    <input type="password" class="form-control border-start-0" id="password" name="password" placeholder="••••••••" required>
+                                </div>
+                            </div>
+                            
+                            <div class="col-sm-6">
+                                <label for="password_confirm" class="form-label fw-semibold">Confirmation</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-shield-check"></i></span>
+                                    <input type="password" class="form-control border-start-0" id="password_confirm" name="password_confirm" placeholder="••••••••" required>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="consentement" required checked>
+                                    <label class="form-check-label small text-muted" for="consentement">
+                                        J'accepte que mes réponses fictives soient traitées dans le cadre de ce projet d'étude.
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12 mt-4">
+                                <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold rounded-pill shadow-sm">
+                                    <i class="bi bi-check2-circle me-1"></i> Créer mon compte
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                    
+                    <hr class="my-4 text-muted">
+                    
+                    <div class="text-center">
+                        <span class="text-muted small">Vous possédez déjà un compte ?</span>
+                        <a href="{% url 'comptes:connexion' %}" class="fw-semibold text-primary text-decoration-none ms-1">
+                            Se connecter
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,4 +1,5 @@
-"""
-wellmind/asgi.py : Passerelle standard ASGI pour les serveurs web asynchrones compatibles.
-"""
+import os
+from django.core.asgi import get_asgi_application
 
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'wellmind.settings')
+application = get_asgi_application()

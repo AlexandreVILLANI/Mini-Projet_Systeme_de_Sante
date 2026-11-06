@@ -1,10 +1,75 @@
-<!--
-templates/evaluations/questionnaire.html : Vue pour passer le test OMS WHO-5.
+{% extends "base.html" %}
 
-Rôle dans le projet :
-- Hérite de 'base.html'.
-- Présente les 5 questions officielles portant sur les deux dernières semaines.
-- Pour chaque question, propose 6 boutons radio (valeurs 0 à 5, de 'À aucun moment' à 'Tout le temps').
-- Bouton de validation qui envoie les réponses en POST.
--->
+{% block title %}Questionnaire WHO-5 - WellMind-Lab{% endblock %}
 
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            
+            <!-- En-tête du questionnaire -->
+            <div class="card border-0 shadow-sm rounded-4 mb-4 bg-primary text-white overflow-hidden">
+                <div class="card-body p-4 p-md-5">
+                    <div class="d-flex align-items-center gap-3 mb-2">
+                        <span class="badge bg-white text-primary px-3 py-2 rounded-pill fw-bold">Test officiel OMS</span>
+                        <span class="badge bg-primary-subtle text-white px-3 py-2 rounded-pill">5 questions</span>
+                    </div>
+                    <h2 class="fw-bold mb-2">Indice de Bien-Être WHO-5</h2>
+                    <p class="mb-0 text-white-50 lead fs-6">
+                        Veuillez indiquer pour chacune des cinq déclarations suivantes la situation qui se rapproche le plus de ce que vous avez ressenti <strong>au cours des deux dernières semaines</strong>.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Formulaire WHO-5 -->
+            <form method="post" action="{% url 'evaluations:questionnaire' %}">
+                {% csrf_token %}
+                
+                {% for question in questions %}
+                <div class="card border-0 shadow-sm rounded-4 mb-3 question-card">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <span class="badge bg-primary-subtle text-primary rounded-pill px-3 py-1 fw-bold">
+                                Question {{ question.id }} / 5
+                            </span>
+                        </div>
+                        <h5 class="fw-semibold text-dark mb-3">
+                            « {{ question.texte }} »
+                        </h5>
+                        
+                        <!-- Options de réponse (Échelle de Likert 0 à 5) -->
+                        <div class="likert-grid">
+                            {% for opt in echelle %}
+                            <label class="likert-option">
+                                <input type="radio" name="q{{ question.id }}" value="{{ opt.valeur }}" required {% if opt.valeur == 3 %}checked{% endif %}>
+                                <div class="option-content">
+                                    <span class="option-score">{{ opt.valeur }}</span>
+                                    <span class="option-label">{{ opt.libelle }}</span>
+                                </div>
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+
+                <!-- Bandeau explicatif du calcul -->
+                <div class="card border-0 bg-info-subtle rounded-4 p-3 mb-4 text-center">
+                    <div class="small text-info-emphasis">
+                        <i class="bi bi-calculator me-1"></i>
+                        <strong>Méthode de calcul :</strong> Score brut = Somme des 5 réponses (max 25) • Score final = Score brut × 4 (sur 100).
+                    </div>
+                </div>
+
+                <!-- Bouton de validation -->
+                <div class="text-center mb-5">
+                    <button type="submit" class="btn btn-primary btn-lg px-5 py-3 rounded-pill fw-bold shadow">
+                        <i class="bi bi-magic me-2"></i> Valider et Générer mon Plan Pédagogique
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
