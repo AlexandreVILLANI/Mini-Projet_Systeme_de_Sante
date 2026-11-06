@@ -1,9 +1,13 @@
 """
 evaluations/views.py : Vues pour le questionnaire WHO-5, les résultats et l'historique.
+Connecté au modèle open source Qwen3-4B via Ollama.
 """
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from datetime import datetime
+
+from .services import ServiceIA_Ollama
+from .models import PlanPedagogique
 
 # Questions officielles WHO-5 de l'Organisation Mondiale de la Santé
 # (Ces questions sont officielles et fixes, elles sont À GARDER pour le projet)
@@ -42,9 +46,9 @@ ECHELLE_LIKERT = [
 
 
 def vue_questionnaire(request):
-    """Affiche et traite le questionnaire officiel WHO-5."""
+    """Affiche et traite le questionnaire officiel WHO-5 en interrogeant Qwen3-4B."""
     if request.method == 'POST':
-        # Récupération et calcul du score
+        # Récupération et calcul du score officiel OMS
         reponses = []
         for i in range(1, 6):
             val = request.POST.get(f'q{i}')
@@ -53,22 +57,36 @@ def vue_questionnaire(request):
         score_brut = sum(reponses)
         score_100 = score_brut * 4
 
+        # Connexion avec le Service LLM Ollama (Qwen3-4B)
+        service_ia = ServiceIA_Ollama(modele="qwen3:4b")
+        analyse_score = service_ia.analyserScore(score_100)
+        texte_plan = service_ia.genererPlan7Jours(score_100)
+        plan_jours = service_ia.extraire_jours(texte_plan)
+
         # =========================================================================
         # [TEMPORAIRE - NE PAS GARDER POUR LA VERSION FINALE DU PROJET]
-        # Ce stockage dans la session HTTP sert uniquement à tester le front-end.
+        # Ce stockage dans la session HTTP sert pour la démo courante.
         # TODO FINALE :
-        # 1. Remplacer par l'instanciation de l'objet Evaluation et sauvegarde en BDD :
+        # 1. Remplacer par l'enregistrement de l'objet Evaluation et PlanPedagogique en BDD :
         #    nouvelle_eval = Evaluation.objects.create(
         #        patient=request.user,
         #        reponseQ1=reponses[0], reponseQ2=reponses[1], reponseQ3=reponses[2],
         #        reponseQ4=reponses[3], reponseQ5=reponses[4]
         #    )
-        # 2. Appeler ServiceIA_Ollama pour générer le plan et l'enregistrer dans PlanPedagogique.
-        # 3. Rediriger vers : redirect('evaluations:resultats', evaluation_id=nouvelle_eval.id)
+        #    PlanPedagogique.objects.create(evaluation=nouvelle_eval, contenuTexte=texte_plan)
+        # 2. Rediriger vers : redirect('evaluations:resultats', evaluation_id=nouvelle_eval.id)
         # =========================================================================
         request.session['dernier_score_brut'] = score_brut
         request.session['dernier_score_100'] = score_100
-        messages.success(request, f"Votre questionnaire a été validé avec succès ! Score : {score_100}/100")
+        request.session['dernier_analyse_score'] = analyse_score
+        request.session['dernier_texte_plan'] = texte_plan
+        request.session['dernier_plan_jours'] = plan_jours
+
+        messages.success(
+            request, 
+            f"Questionnaire validé avec succès ! Score WHO-5 : {score_100}/100. "
+            f"Plan de bien-être analysé et généré par Qwen3-4B."
+        )
         return redirect('evaluations:resultats', evaluation_id=1)
 
     context = {
@@ -79,42 +97,30 @@ def vue_questionnaire(request):
 
 
 def vue_resultats(request, evaluation_id=1):
-    """Présentation des résultats et du plan pédagogique sur 7 jours."""
-    score_brut = request.session.get('dernier_score_brut', 17)
-    score_100 = request.session.get('dernier_score_100', 68)
+    """Présentation des résultats et du plan pédagogique 7 jours généré par Qwen3-4B."""
+    score_brut = request.session.get('dernier_score_brut', 18)
+    score_100 = request.session.get('dernier_score_100', 72)
+    analyse_score = request.session.get('dernier_analyse_score')
+    texte_plan = request.session.get('dernier_texte_plan')
+    plan_jours = request.session.get('dernier_plan_jours')
 
-    # =========================================================================
-    # [TEMPORAIRE - NE PAS GARDER POUR LA VERSION FINALE DU PROJET]
-    # Ce dictionnaire 'plan_7_jours' est un bouchon (mock) codé en dur pour
-    # prévisualiser le design front-end des 7 cartes journalières.
-    # TODO FINALE :
-    # 1. Récupérer l'évaluation depuis la BDD : eval_obj = get_object_or_404(Evaluation, id=evaluation_id)
-    # 2. Récupérer le plan généré par Ollama : plan_obj = eval_obj.plan
-    # 3. Transmettre le vrai contenu 'plan_obj.contenuTexte' au template.
-    # =========================================================================
-    plan_7_jours = [
-        {"jour": 1, "titre": "Prise de conscience & Respiration", "contenu": "Consacrez 5 minutes à une respiration guidée en pleine conscience pour relâcher les tensions musculaires."},
-        {"jour": 2, "titre": "Activité physique douce", "contenu": "Faites une marche de 20 minutes en extérieur à un rythme confortable pour stimuler votre énergie."},
-        {"jour": 3, "titre": "Déconnexion numérique", "contenu": "Éteignez tous les écrans (téléphone, ordinateur) 45 minutes avant de vous coucher pour favoriser l'endormissement."},
-        {"jour": 4, "titre": "Reconnaissance et gratitude", "contenu": "Notez sur un carnet trois moments positifs ou agréables vécus au cours de votre journée."},
-        {"jour": 5, "titre": "Lien social bienveillant", "contenu": "Partagez un moment d'échange chaleureux (appel, café) avec un proche ou un collègue."},
-        {"jour": 6, "titre": "Pause créative ou ressourçante", "contenu": "Accordez-vous 30 minutes dédiées à une passion non liée au travail (lecture, musique, dessin)."},
-        {"jour": 7, "titre": "Bilan & Bienveillance", "contenu": "Prenez le temps de faire le point sur votre semaine sans jugement et identifiez ce qui vous a fait le plus de bien."}
-    ]
-
-    avertissement_medical = (
-        "Cet outil est conçu exclusivement à des fins pédagogiques et éducatives avec des données fictives. "
-        "Les conseils présentés ne constituent en aucun cas un diagnostic médical ni une prescription thérapeutique. "
-        "En cas de souffrance psychologique ou de détresse, consultez un professionnel de santé qualifié."
-    )
+    # Si accès direct sans session préalable, on interroge Qwen3-4B
+    if not texte_plan or not plan_jours:
+        service_ia = ServiceIA_Ollama(modele="qwen3:4b")
+        analyse_score = service_ia.analyserScore(score_100)
+        texte_plan = service_ia.genererPlan7Jours(score_100)
+        plan_jours = service_ia.extraire_jours(texte_plan)
 
     context = {
         'evaluation_id': evaluation_id,
         'date_evaluation': datetime.now().strftime("%d/%m/%Y"),
         'score_brut': score_brut,
         'score_100': score_100,
-        'plan_7_jours': plan_7_jours,
-        'avertissement_medical': avertissement_medical,
+        'analyse_score': analyse_score,
+        'texte_plan': texte_plan,
+        'plan_7_jours': plan_jours,
+        'modele_ia': "Qwen3-4B (via Ollama local)",
+        'avertissement_medical': PlanPedagogique.AVERTISSEMENT_PAR_DEFAUT,
     }
     return render(request, 'evaluations/resultats.html', context)
 
@@ -135,8 +141,8 @@ def vue_historique(request):
         {
             "id": 1,
             "date": "06/11/2026",
-            "score_brut": request.session.get('dernier_score_brut', 17),
-            "score_100": request.session.get('dernier_score_100', 68),
+            "score_brut": request.session.get('dernier_score_brut', 18),
+            "score_100": request.session.get('dernier_score_100', 72),
             "niveau": "Bien-être satisfaisant"
         },
         {

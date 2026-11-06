@@ -14,8 +14,8 @@
                         <i class="bi bi-calendar-check me-1"></i> Évaluation du {{ date_evaluation }}
                     </span>
                     
-                    <h2 class="fw-bold mb-1">Votre Indice de Bien-Être</h2>
-                    <p class="text-muted small mb-4">Calculé sur la base de vos réponses au questionnaire WHO-5</p>
+                    <h2 class="fw-bold mb-1">Votre Indice de Bien-Être WHO-5</h2>
+                    <p class="text-muted small mb-4">Calculé selon la formule officielle OMS : 4 × somme des 5 réponses</p>
 
                     <!-- Affichage du Score Normalisé -->
                     <div class="score-display my-4">
@@ -47,6 +47,16 @@
                 </div>
             </div>
 
+            <!-- Analyse du score par l'IA -->
+            {% if analyse_score %}
+            <div class="alert alert-primary border-primary-subtle rounded-4 p-3 mb-4 shadow-sm d-flex align-items-center gap-3">
+                <i class="bi bi-chat-quote-fill text-primary fs-3 flex-shrink-0"></i>
+                <div class="small">
+                    <strong>Analyse pédagogique du score :</strong> {{ analyse_score }}
+                </div>
+            </div>
+            {% endif %}
+
             <!-- Avertissement Médical OBLIGATOIRE -->
             <div class="alert alert-danger border-danger-subtle rounded-4 p-4 mb-4 shadow-sm" role="alert">
                 <div class="d-flex align-items-start gap-3">
@@ -65,14 +75,14 @@
                 <div class="card-header bg-white border-0 pt-4 px-4 pb-0 d-flex justify-content-between align-items-center">
                     <div>
                         <span class="badge bg-primary-subtle text-primary px-3 py-1 rounded-pill fw-bold">
-                            <i class="bi bi-cpu me-1"></i> Modèle IA : Qwen3-4B via Ollama
+                            <i class="bi bi-cpu me-1"></i> Modèle IA : {{ modele_ia|default:"Qwen3-4B (Ollama)" }}
                         </span>
                         <h4 class="fw-bold mt-2 mb-0">Plan Pédagogique de Bien-Être sur 7 Jours</h4>
                     </div>
                 </div>
                 <div class="card-body p-4">
                     <p class="text-muted small mb-4">
-                        Voici un programme quotidien d'accompagnement éducatif spécialement personnalisé selon votre niveau d'énergie actuel :
+                        Ce programme quotidien d'accompagnement éducatif est personnalisé selon votre score WHO-5 actuel :
                     </p>
 
                     <div class="row g-3">
@@ -94,6 +104,24 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Réponse textuelle brute générée par le modèle (Accordéon) -->
+            {% if texte_plan %}
+            <div class="accordion mb-4" id="accordionPlanComplet">
+                <div class="accordion-item border-0 shadow-sm rounded-4 overflow-hidden">
+                    <h2 class="accordion-header" id="headingPlan">
+                        <button class="accordion-button collapsed bg-white fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePlan">
+                            <i class="bi bi-file-earmark-text me-2 text-primary"></i> Voir la réponse complète du LLM (Qwen3-4B)
+                        </button>
+                    </h2>
+                    <div id="collapsePlan" class="accordion-collapse collapse" data-bs-parent="#accordionPlanComplet">
+                        <div class="accordion-body bg-light small text-dark p-4" style="white-space: pre-line; line-height: 1.6;">
+                            {{ texte_plan }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
 
             <!-- Actions de navigation -->
             <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-5">
