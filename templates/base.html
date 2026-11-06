@@ -1,0 +1,14 @@
+<!--
+templates/base.html : Modèle maître (layout commun) pour toutes les pages.
+
+Rôle dans le projet :
+- Structure HTML5 globale avec balises <head> et <body>.
+- Intègre la feuille de style CSS (static/css/style.css ou Bootstrap).
+- Barre de navigation réactive :
+    * Liens d'inscription et de connexion si l'utilisateur n'est pas connecté.
+    * Liens vers Questionnaire, Historique et Déconnexion si connecté (request.user.is_authenticated).
+- Zone d'affichage des messages flash Django ({% for message in messages %}).
+- Zone de contenu dynamique ({% block content %}{% endblock %}).
+- Bandeau légal de santé (Footer) obligatoire rappelant le caractère éducatif et non diagnostique.
+-->
+
