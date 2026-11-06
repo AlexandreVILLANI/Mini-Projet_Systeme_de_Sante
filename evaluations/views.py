@@ -6,6 +6,7 @@ from django.contrib import messages
 from datetime import datetime
 
 # Questions officielles WHO-5 de l'Organisation Mondiale de la Santé
+# (Ces questions sont officielles et fixes, elles sont À GARDER pour le projet)
 QUESTIONS_WHO5 = [
     {
         "id": 1,
@@ -29,6 +30,7 @@ QUESTIONS_WHO5 = [
     },
 ]
 
+# Échelle de Likert officielle (0 à 5) - À GARDER pour le projet
 ECHELLE_LIKERT = [
     {"valeur": 5, "libelle": "Tout le temps"},
     {"valeur": 4, "libelle": "La plupart du temps"},
@@ -51,7 +53,19 @@ def vue_questionnaire(request):
         score_brut = sum(reponses)
         score_100 = score_brut * 4
 
-        # Enregistrement en session pour la démo front-end
+        # =========================================================================
+        # [TEMPORAIRE - NE PAS GARDER POUR LA VERSION FINALE DU PROJET]
+        # Ce stockage dans la session HTTP sert uniquement à tester le front-end.
+        # TODO FINALE :
+        # 1. Remplacer par l'instanciation de l'objet Evaluation et sauvegarde en BDD :
+        #    nouvelle_eval = Evaluation.objects.create(
+        #        patient=request.user,
+        #        reponseQ1=reponses[0], reponseQ2=reponses[1], reponseQ3=reponses[2],
+        #        reponseQ4=reponses[3], reponseQ5=reponses[4]
+        #    )
+        # 2. Appeler ServiceIA_Ollama pour générer le plan et l'enregistrer dans PlanPedagogique.
+        # 3. Rediriger vers : redirect('evaluations:resultats', evaluation_id=nouvelle_eval.id)
+        # =========================================================================
         request.session['dernier_score_brut'] = score_brut
         request.session['dernier_score_100'] = score_100
         messages.success(request, f"Votre questionnaire a été validé avec succès ! Score : {score_100}/100")
@@ -69,7 +83,15 @@ def vue_resultats(request, evaluation_id=1):
     score_brut = request.session.get('dernier_score_brut', 17)
     score_100 = request.session.get('dernier_score_100', 68)
 
-    # Exemple de plan pédagogique 7 jours généré (simulé pour l'affichage front-end)
+    # =========================================================================
+    # [TEMPORAIRE - NE PAS GARDER POUR LA VERSION FINALE DU PROJET]
+    # Ce dictionnaire 'plan_7_jours' est un bouchon (mock) codé en dur pour
+    # prévisualiser le design front-end des 7 cartes journalières.
+    # TODO FINALE :
+    # 1. Récupérer l'évaluation depuis la BDD : eval_obj = get_object_or_404(Evaluation, id=evaluation_id)
+    # 2. Récupérer le plan généré par Ollama : plan_obj = eval_obj.plan
+    # 3. Transmettre le vrai contenu 'plan_obj.contenuTexte' au template.
+    # =========================================================================
     plan_7_jours = [
         {"jour": 1, "titre": "Prise de conscience & Respiration", "contenu": "Consacrez 5 minutes à une respiration guidée en pleine conscience pour relâcher les tensions musculaires."},
         {"jour": 2, "titre": "Activité physique douce", "contenu": "Faites une marche de 20 minutes en extérieur à un rythme confortable pour stimuler votre énergie."},
@@ -99,7 +121,16 @@ def vue_resultats(request, evaluation_id=1):
 
 def vue_historique(request):
     """Consultation de l'historique des évaluations du patient."""
-    # Données simulées pour la démo front-end
+    # =========================================================================
+    # [TEMPORAIRE - NE PAS GARDER POUR LA VERSION FINALE DU PROJET]
+    # Cette liste 'historique_evaluations' contient de fausses évaluations en dur
+    # pour tester l'affichage du tableau sans avoir encore créé de vrais comptes.
+    # TODO FINALE :
+    # 1. Remplacer par la requête ORM réelle filtrée sur le patient connecté :
+    #    evaluations = Evaluation.objects.filter(patient=request.user).order_by('-dateEvaluation')
+    # 2. Protéger la vue avec le décorateur @login_required pour que chaque
+    #    patient ne voie QUE ses propres résultats.
+    # =========================================================================
     historique_evaluations = [
         {
             "id": 1,
