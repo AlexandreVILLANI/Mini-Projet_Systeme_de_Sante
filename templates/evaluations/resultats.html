@@ -70,7 +70,7 @@
                 </div>
             </div>
 
-            <!-- Plan Pédagogique sur 7 jours généré par l'IA -->
+            <!-- Réponse directe du Modèle LLM (Qwen3-4B) -->
             <div class="card border-0 shadow-sm rounded-4 mb-4">
                 <div class="card-header bg-white border-0 pt-4 px-4 pb-0 d-flex justify-content-between align-items-center">
                     <div>
@@ -81,47 +81,16 @@
                     </div>
                 </div>
                 <div class="card-body p-4">
-                    <p class="text-muted small mb-4">
-                        Ce programme quotidien d'accompagnement éducatif est personnalisé selon votre score WHO-5 actuel :
+                    <p class="text-muted small mb-3">
+                        Ce programme a été rédigé spécifiquement par le modèle de langage Qwen3-4B à partir de votre score d'évaluation :
                     </p>
 
-                    <div class="row g-3">
-                        {% for jour in plan_7_jours %}
-                        <div class="col-md-6 col-lg-12">
-                            <div class="card border-0 bg-light rounded-3 p-3 h-100 hover-shadow transition">
-                                <div class="d-flex align-items-start gap-3">
-                                    <div class="day-badge bg-primary text-white rounded-circle flex-shrink-0 fw-bold d-flex align-items-center justify-content-center">
-                                        J{{ jour.jour }}
-                                    </div>
-                                    <div>
-                                        <h6 class="fw-bold mb-1 text-primary">{{ jour.titre }}</h6>
-                                        <p class="text-muted small mb-0">{{ jour.contenu }}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        {% endfor %}
+                    <!-- Affichage de la réponse authentique générée par le modèle -->
+                    <div class="bg-light rounded-4 p-4 text-dark fs-6 border" style="line-height: 1.8; white-space: pre-line;">
+                        {{ texte_plan }}
                     </div>
                 </div>
             </div>
-
-            <!-- Réponse textuelle brute générée par le modèle (Accordéon) -->
-            {% if texte_plan %}
-            <div class="accordion mb-4" id="accordionPlanComplet">
-                <div class="accordion-item border-0 shadow-sm rounded-4 overflow-hidden">
-                    <h2 class="accordion-header" id="headingPlan">
-                        <button class="accordion-button collapsed bg-white fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePlan">
-                            <i class="bi bi-file-earmark-text me-2 text-primary"></i> Voir la réponse complète du LLM (Qwen3-4B)
-                        </button>
-                    </h2>
-                    <div id="collapsePlan" class="accordion-collapse collapse" data-bs-parent="#accordionPlanComplet">
-                        <div class="accordion-body bg-light small text-dark p-4" style="white-space: pre-line; line-height: 1.6;">
-                            {{ texte_plan }}
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {% endif %}
 
             <!-- Actions de navigation -->
             <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-5">

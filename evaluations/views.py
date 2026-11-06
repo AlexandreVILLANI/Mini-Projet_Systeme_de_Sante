@@ -61,7 +61,6 @@ def vue_questionnaire(request):
         service_ia = ServiceIA_Ollama(modele="qwen3:4b")
         analyse_score = service_ia.analyserScore(score_100)
         texte_plan = service_ia.genererPlan7Jours(score_100)
-        plan_jours = service_ia.extraire_jours(texte_plan)
 
         # =========================================================================
         # [TEMPORAIRE - NE PAS GARDER POUR LA VERSION FINALE DU PROJET]
@@ -80,7 +79,6 @@ def vue_questionnaire(request):
         request.session['dernier_score_100'] = score_100
         request.session['dernier_analyse_score'] = analyse_score
         request.session['dernier_texte_plan'] = texte_plan
-        request.session['dernier_plan_jours'] = plan_jours
 
         messages.success(
             request, 
@@ -97,19 +95,17 @@ def vue_questionnaire(request):
 
 
 def vue_resultats(request, evaluation_id=1):
-    """Présentation des résultats et du plan pédagogique 7 jours généré par Qwen3-4B."""
+    """Présentation des résultats et de la réponse textuelle produite par Qwen3-4B."""
     score_brut = request.session.get('dernier_score_brut', 18)
     score_100 = request.session.get('dernier_score_100', 72)
     analyse_score = request.session.get('dernier_analyse_score')
     texte_plan = request.session.get('dernier_texte_plan')
-    plan_jours = request.session.get('dernier_plan_jours')
 
     # Si accès direct sans session préalable, on interroge Qwen3-4B
-    if not texte_plan or not plan_jours:
+    if not texte_plan:
         service_ia = ServiceIA_Ollama(modele="qwen3:4b")
         analyse_score = service_ia.analyserScore(score_100)
         texte_plan = service_ia.genererPlan7Jours(score_100)
-        plan_jours = service_ia.extraire_jours(texte_plan)
 
     context = {
         'evaluation_id': evaluation_id,
@@ -118,7 +114,6 @@ def vue_resultats(request, evaluation_id=1):
         'score_100': score_100,
         'analyse_score': analyse_score,
         'texte_plan': texte_plan,
-        'plan_7_jours': plan_jours,
         'modele_ia': "Qwen3-4B (via Ollama local)",
         'avertissement_medical': PlanPedagogique.AVERTISSEMENT_PAR_DEFAUT,
     }

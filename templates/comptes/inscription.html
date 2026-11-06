@@ -17,54 +17,109 @@
                     <form method="post" action="{% url 'comptes:inscription' %}">
                         {% csrf_token %}
                         
+                        {% if form.non_field_errors %}
+                        <div class="alert alert-danger py-2 small mb-3">
+                            {% for error in form.non_field_errors %}
+                                <div>{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
                         <div class="row g-3">
-                            <div class="col-sm-6">
-                                <label for="prenom" class="form-label fw-semibold">Prénom</label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-person"></i></span>
-                                    <input type="text" class="form-control border-start-0" id="prenom" name="prenom" placeholder="Jean" required>
-                                </div>
-                            </div>
-                            
-                            <div class="col-sm-6">
-                                <label for="nom" class="form-label fw-semibold">Nom</label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-person"></i></span>
-                                    <input type="text" class="form-control border-start-0" id="nom" name="nom" placeholder="Dupont" required>
-                                </div>
-                            </div>
-                            
+                            <!-- Identifiant -->
                             <div class="col-12">
-                                <label for="email" class="form-label fw-semibold">Adresse Email</label>
+                                <label for="{{ form.username.id_for_label }}" class="form-label fw-semibold">Identifiant (Nom d'utilisateur)</label>
                                 <div class="input-group">
-                                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-envelope"></i></span>
-                                    <input type="email" class="form-control border-start-0" id="email" name="email" placeholder="jean.dupont@exemple.fr" required>
+                                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-at"></i></span>
+                                    <input type="text" class="form-control border-start-0 {% if form.username.errors %}is-invalid{% endif %}" 
+                                           id="{{ form.username.id_for_label }}" name="{{ form.username.html_name }}" 
+                                           value="{{ form.username.value|default:'' }}" placeholder="jdupont" required>
                                 </div>
-                                <div class="form-text">Votre email restera strictement confidentiel.</div>
+                                {% if form.username.errors %}
+                                    <div class="text-danger small mt-1">{{ form.username.errors.0 }}</div>
+                                {% endif %}
                             </div>
 
+                            <!-- Prénom et Nom -->
+                            <div class="col-sm-6">
+                                <label for="{{ form.first_name.id_for_label }}" class="form-label fw-semibold">Prénom</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-person"></i></span>
+                                    <input type="text" class="form-control border-start-0 {% if form.first_name.errors %}is-invalid{% endif %}" 
+                                           id="{{ form.first_name.id_for_label }}" name="{{ form.first_name.html_name }}" 
+                                           value="{{ form.first_name.value|default:'' }}" placeholder="Jean" required>
+                                </div>
+                                {% if form.first_name.errors %}
+                                    <div class="text-danger small mt-1">{{ form.first_name.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-sm-6">
+                                <label for="{{ form.last_name.id_for_label }}" class="form-label fw-semibold">Nom</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-person"></i></span>
+                                    <input type="text" class="form-control border-start-0 {% if form.last_name.errors %}is-invalid{% endif %}" 
+                                           id="{{ form.last_name.id_for_label }}" name="{{ form.last_name.html_name }}" 
+                                           value="{{ form.last_name.value|default:'' }}" placeholder="Dupont" required>
+                                </div>
+                                {% if form.last_name.errors %}
+                                    <div class="text-danger small mt-1">{{ form.last_name.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Email -->
                             <div class="col-12">
-                                <label for="role" class="form-label fw-semibold">Rôle du compte</label>
-                                <select class="form-select" id="role" name="role">
-                                    <option value="PATIENT" selected>Patient (évaluation du bien-être)</option>
-                                    <option value="ADMINISTRATEUR">Administrateur (gestion)</option>
+                                <label for="{{ form.email.id_for_label }}" class="form-label fw-semibold">Adresse Email</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-envelope"></i></span>
+                                    <input type="email" class="form-control border-start-0 {% if form.email.errors %}is-invalid{% endif %}" 
+                                           id="{{ form.email.id_for_label }}" name="{{ form.email.html_name }}" 
+                                           value="{{ form.email.value|default:'' }}" placeholder="jean.dupont@exemple.fr" required>
+                                </div>
+                                {% if form.email.errors %}
+                                    <div class="text-danger small mt-1">{{ form.email.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Rôle -->
+                            <div class="col-12">
+                                <label for="{{ form.role.id_for_label }}" class="form-label fw-semibold">Rôle du compte</label>
+                                <select class="form-select" id="{{ form.role.id_for_label }}" name="{{ form.role.html_name }}">
+                                    <option value="PATIENT" {% if form.role.value == 'PATIENT' or not form.role.value %}selected{% endif %}>
+                                        Patient (évaluation du bien-être WHO-5)
+                                    </option>
+                                    <option value="ADMINISTRATEUR" {% if form.role.value == 'ADMINISTRATEUR' %}selected{% endif %}>
+                                        Administrateur (gestion)
+                                    </option>
                                 </select>
                             </div>
                             
+                            <!-- Mot de passe -->
                             <div class="col-sm-6">
-                                <label for="password" class="form-label fw-semibold">Mot de passe</label>
+                                <label for="{{ form.password1.id_for_label }}" class="form-label fw-semibold">Mot de passe</label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-light border-end-0"><i class="bi bi-lock"></i></span>
-                                    <input type="password" class="form-control border-start-0" id="password" name="password" placeholder="••••••••" required>
+                                    <input type="password" class="form-control border-start-0 {% if form.password1.errors %}is-invalid{% endif %}" 
+                                           id="{{ form.password1.id_for_label }}" name="{{ form.password1.html_name }}" 
+                                           placeholder="••••••••" required>
                                 </div>
+                                {% if form.password1.errors %}
+                                    <div class="text-danger small mt-1">{{ form.password1.errors.0 }}</div>
+                                {% endif %}
                             </div>
                             
+                            <!-- Confirmation mot de passe -->
                             <div class="col-sm-6">
-                                <label for="password_confirm" class="form-label fw-semibold">Confirmation</label>
+                                <label for="{{ form.password2.id_for_label }}" class="form-label fw-semibold">Confirmation</label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-light border-end-0"><i class="bi bi-shield-check"></i></span>
-                                    <input type="password" class="form-control border-start-0" id="password_confirm" name="password_confirm" placeholder="••••••••" required>
+                                    <input type="password" class="form-control border-start-0 {% if form.password2.errors %}is-invalid{% endif %}" 
+                                           id="{{ form.password2.id_for_label }}" name="{{ form.password2.html_name }}" 
+                                           placeholder="••••••••" required>
                                 </div>
+                                {% if form.password2.errors %}
+                                    <div class="text-danger small mt-1">{{ form.password2.errors.0 }}</div>
+                                {% endif %}
                             </div>
 
                             <div class="col-12">

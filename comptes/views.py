@@ -1,51 +1,73 @@
 """
-comptes/views.py : Vues pour l'inscription, la connexion et la déconnexion.
+comptes/views.py : Contrôleurs pour l'inscription, la connexion et la déconnexion.
+
+Sécurité mise en œuvre :
+- Mots de passe hachés à l'enregistrement (PBKDF2/SHA256).
+- Gestion des sessions utilisateur authentifiées.
+- Validation stricte des formulaires côté serveur.
+- Protection contre les attaques CSRF.
 """
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.contrib.auth import login, logout
+from .forms import InscriptionForm, ConnexionForm
 
 
 def vue_inscription(request):
-    """Vue du formulaire d'inscription."""
+    """
+    Traitement sécurisé de l'inscription d'un nouvel utilisateur.
+    """
+    if request.user.is_authenticated:
+        return redirect('evaluations:questionnaire')
+
     if request.method == 'POST':
-        # =========================================================================
-        # [TEMPORAIRE - NE PAS GARDER POUR LA VERSION FINALE DU PROJET]
-        # Ce bloc simule l'inscription pour tester l'interface graphique.
-        # TODO FINALE :
-        # 1. Utiliser le formulaire Django 'InscriptionPatientForm(request.POST)'.
-        # 2. Vérifier 'if form.is_valid():'.
-        # 3. Enregistrer l'utilisateur avec 'user = form.save()'.
-        # 4. Rediriger vers la connexion ou connecter automatiquement avec 'login(request, user)'.
-        # =========================================================================
-        messages.success(request, "Compte créé avec succès ! Vous pouvez maintenant vous connecter.")
-        return redirect('comptes:connexion')
-    return render(request, 'comptes/inscription.html')
+        form = InscriptionForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            messages.success(
+                request, 
+                f"Compte {user.username} créé avec succès ! Connectez-vous pour commencer votre évaluation."
+            )
+            return redirect('comptes:connexion')
+        else:
+            messages.error(request, "Erreur dans le formulaire. Veuillez vérifier vos informations.")
+    else:
+        form = InscriptionForm()
+
+    return render(request, 'comptes/inscription.html', {'form': form})
 
 
 def vue_connexion(request):
-    """Vue du formulaire de connexion."""
-    if request.method == 'POST':
-        # =========================================================================
-        # [TEMPORAIRE - NE PAS GARDER POUR LA VERSION FINALE DU PROJET]
-        # Ce bloc simule la connexion sans vérifier le mot de passe réel.
-        # TODO FINALE :
-        # 1. Utiliser 'AuthenticationForm(request, data=request.POST)' ou 'authenticate()'.
-        # 2. Vérifier les identifiants et le mot de passe haché.
-        # 3. Ouvrir la session avec 'login(request, user)'.
-        # 4. Rediriger selon le rôle (Patient -> questionnaire, Admin -> gestion).
-        # =========================================================================
-        messages.success(request, "Connexion réussie ! Bienvenue sur WellMind-Lab.")
+    """
+    Authentification sécurisée et ouverture de session utilisateur.
+    """
+    if request.user.is_authenticated:
         return redirect('evaluations:questionnaire')
-    return render(request, 'comptes/connexion.html')
+
+    if request.method == 'POST':
+        form = ConnexionForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            messages.success(request, f"Connexion réussie ! Bienvenue {user.first_name or user.username}.")
+            
+            # Redirection vers la page demandée ou vers le questionnaire par défaut
+            prochaine_page = request.GET.get('next')
+            if prochaine_page:
+                return redirect(prochaine_page)
+            return redirect('evaluations:questionnaire')
+        else:
+            messages.error(request, "Identifiant ou mot de passe incorrect.")
+    else:
+        form = ConnexionForm()
+
+    return render(request, 'comptes/connexion.html', {'form': form})
 
 
 def vue_deconnexion(request):
-    """Déconnexion de l'utilisateur."""
-    # =========================================================================
-    # [TEMPORAIRE - NE PAS GARDER POUR LA VERSION FINALE DU PROJET]
-    # TODO FINALE :
-    # Appeler 'from django.contrib.auth import logout' puis 'logout(request)'
-    # pour détruire réellement la session utilisateur en cours.
-    # =========================================================================
-    messages.info(request, "Vous avez été déconnecté.")
+    """
+    Fermeture sécurisée de la session utilisateur.
+    """
+    logout(request)
+    messages.info(request, "Vous avez été déconnecté avec succès.")
     return redirect('comptes:connexion')

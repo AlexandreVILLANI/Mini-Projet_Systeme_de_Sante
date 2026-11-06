@@ -6,3 +6,4 @@ import django
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'wellmind.settings')
 django.setup()
+
