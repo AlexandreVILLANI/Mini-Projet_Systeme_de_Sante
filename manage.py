@@ -11,4 +11,19 @@ Rôle dans le projet :
     * python manage.py createsuperuser : Crée un compte administrateur Django.
     * python manage.py test : Lance la suite de tests.
 """
+import os
+import sys
 
+def main():
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'wellmind.settings')
+    try:
+        from django.core.management import execute_from_command_line
+    except ImportError as exc:
+        raise ImportError(
+            "Impossible d'importer Django. Avez-vous pensé à activer votre "
+            "environnement virtuel avec 'source venv/bin/activate' ?"
+        ) from exc
+    execute_from_command_line(sys.argv)
+
+if __name__ == '__main__':
+    main()
